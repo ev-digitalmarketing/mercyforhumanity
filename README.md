@@ -36,6 +36,6 @@ The supplied Vinext starter could not install dependencies because this machine 
 
 ## Motion and gallery
 
-Blue is the primary palette; red is the secondary colour on the Donate button, service ribbon, newsletter highlights, and signup action. The homepage introduces the Islamic inspiration for the work and highlights the three most recent published newsletters. Until the first publication, it shows a clear coming-soon invitation. Shared easing coordinates scroll reveals, staggered entrances, page fades, hover feedback, drifting hero photography, floating icons, and animated blue backgrounds. A footer control pauses motion, and OS reduced-motion preferences are respected.
+Blue is the primary palette; red is the secondary colour on the Donate button, service ribbon icons, newsletter highlights, and signup action. The homepage introduces the Islamic inspiration for the work and highlights the three most recent published newsletters. Until the first publication, it shows a clear coming-soon invitation. Shared easing coordinates scroll reveals, staggered entrances, page fades, hover feedback, drifting hero photography, floating icons, and animated blue backgrounds. A footer control pauses motion, and OS reduced-motion preferences are respected.
 
 Gallery photos have no visible captions or description fields. The lightbox has previous/next buttons, left/right keyboard navigation, a position counter, and wraparound. Escape and the close button dismiss it.
