@@ -2,6 +2,11 @@
 
 These instructions apply to this project and all its subdirectories.
 
+## Project organization
+
+- Keep all project source, previews, archives, and other generated files inside `/Users/h/sites/mercyforhumanity/`.
+- Use `preview.html` for the standalone design preview and the ignored `outputs/` directory for downloadable archives. Do not leave project files alongside this folder in `sites/`.
+
 ## Automatic Git workflow
 
 - After completing any future changes in this project, always automatically stage all project changes, commit them with a clear message, and push to `origin main`.

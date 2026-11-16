@@ -1,0 +1,5 @@
+await import('./build.mjs');
+await import('./test.mjs');
+await import('./gallery-test.mjs');
+await import('./subscriber-test.mjs');
+await import('./home-test.mjs');

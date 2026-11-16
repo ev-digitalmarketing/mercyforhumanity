@@ -1,5 +1,7 @@
 # Mercy for Humanity
 
+All project files live in `/Users/h/sites/mercyforhumanity/`. Open `preview.html` for the standalone design preview. Downloadable archives belong in the ignored `outputs/` folder; compiled Worker files and an additional preview are in `dist/`.
+
 Responsive charity website for the Ahmadiyya Muslim Elders Association. Built with dependency-free HTML/CSS/JavaScript and a Cloudflare Worker. Montserrat headings and Open Sans body text load through Google Fonts; system fallbacks are included.
 
 ## Commands
@@ -10,11 +12,17 @@ Responsive charity website for the Ahmadiyya Muslim Elders Association. Built wi
 
 `node scripts/gallery-test.mjs` checks lightbox navigation, wrapping, keyboard controls, and script syntax.
 
+`node scripts/check.mjs` builds the site and runs all API, gallery, subscriber, and homepage checks. Subscriber tests use real SQLite through Node's built-in `node:sqlite` module (Node 24 recommended).
+
 `node scripts/preview.mjs` runs a loopback-only preview on port 4173. Local preview supplies a mock owner identity and stores data in ignored `.local-data/`. This preview authentication adapter is never included in the deployed Worker.
 
 ## Hosted content management
 
 The hosting manifest requests an R2 bucket bound as `BUCKET`. Gallery photos and newsletters persist in R2. Each newsletter has a cover image, title, and plain-text body preserving paragraphs. The manager supports previews, publication, and deletion.
+
+The footer newsletter signup saves an optional name, normalized email address, signup timestamp, and consent version in D1 bound as `DB`. Duplicate emails retain their original signup. The admin's **Subscribers** tab shows names, email addresses, and dates, with pagination through the entire list. Subscriber records are never included in public content responses. The signup endpoint requires explicit consent and same-origin JSON submissions, validates input, and includes a honeypot field. This collects a mailing list; automatic email delivery is not connected.
+
+The schema is in `db/schema.sql`; `node scripts/generate-migrations.mjs` generates the initial schema-only migration and Sites-compatible journal in `drizzle/`. Existing migration files must not be rewritten. The deployment archive includes these migrations; Sites applies them during publication. Local preview applies migrations to `.local-data/subscribers.sqlite` at startup. Local and hosted databases are separate. The standalone HTML design preview does not save signups or contain actual subscriber data.
 
 The `/login` page uses Sites' ChatGPT sign-in. Hosted write operations require authenticated identity and same-origin requests, and rely on the Site's **owner-only platform access policy**. Keep this Site private. Before making the charity website public, introduce an explicit server-side administrator allowlist or supported role integration; signed-in identity alone must not grant public visitors write access.
 
@@ -28,6 +36,6 @@ The supplied Vinext starter could not install dependencies because this machine 
 
 ## Motion and gallery
 
-Blue is the primary palette; red appears only in secondary accents. Shared easing coordinates scroll reveals, staggered entrances, page fades, hover feedback, drifting hero photography, floating icons, and animated blue backgrounds. A footer control pauses motion, and OS reduced-motion preferences are respected.
+Blue is the primary palette; red is the secondary colour on the Donate button, service ribbon, newsletter highlights, and signup action. The homepage introduces the Islamic inspiration for the work and highlights the three most recent published newsletters. Until the first publication, it shows a clear coming-soon invitation. Shared easing coordinates scroll reveals, staggered entrances, page fades, hover feedback, drifting hero photography, floating icons, and animated blue backgrounds. A footer control pauses motion, and OS reduced-motion preferences are respected.
 
 Gallery photos have no visible captions or description fields. The lightbox has previous/next buttons, left/right keyboard navigation, a position counter, and wraparound. Escape and the close button dismiss it.

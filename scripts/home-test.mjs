@@ -1,0 +1,12 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';import vm from 'node:vm';
+const html=fs.readFileSync('web/index.html','utf8');
+const functions=['home','newsCards'].map(name=>html.split('\n').find(line=>line.startsWith('function '+name+'('))).join('\n');
+const addon=fs.readFileSync('web/subscribers.js','utf8');
+const context={content:{gallery:[],newsletters:[]},photos:{run:'/run',walk:'/walk'},esc:String,button:()=>'<a>Action</a>',eventCards:()=>'',band:()=>'',galleryTiles:()=>''};
+vm.createContext(context);vm.runInContext(addon+'\n'+functions,context);
+const empty=vm.runInContext('home()',context);assert.match(empty,/Faith in action/);assert.match(empty,/Prophet Muhammad/);assert.match(empty,/Every step\. Every act\. For humanity/);assert.doesNotMatch(empty,/Illustrative photography/);assert.match(empty,/id="latest-newsletters"/);assert.match(empty,/first newsletter is coming soon/);
+context.content.newsletters=Array.from({length:4},(_,i)=>({title:'Issue '+(i+1),body:'Community news',image:'/issue-'+i,created:'2026-11-16T00:00:00Z'}));
+const latest=vm.runInContext('newsletterHighlights()',context);assert.match(latest,/Issue 3/);assert.doesNotMatch(latest,/Issue 4/);assert.equal((latest.match(/data-news=/g)||[]).length,3);
+assert.match(vm.runInContext('newsCards()',context),/Issue 4/);
+assert.match(html,/id="newsletter-signup"/);assert.match(html,/name="consent" type="checkbox" required/);
+console.log('Passed: faith-focused hero, caption cleanup, latest-three newsletter highlights, full newsletter archive, and footer signup form.');

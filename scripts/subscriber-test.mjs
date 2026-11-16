@@ -1,0 +1,34 @@
+import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';
+import worker from '../dist/server/index.js';import {localD1} from './local-d1.mjs';
+const DB=localD1(),origin='https://mercy.test';
+const BUCKET={async list(){return {objects:[],truncated:false}}};
+const call=(path,options={})=>worker.fetch(new Request(origin+path,options),{DB,BUCKET});
+const signup=(input,extra={})=>call('/api/subscribe',{method:'POST',headers:{origin,'content-type':'application/json',...extra},body:JSON.stringify(input)});
+const data={name:'Amina Khan',email:' AMINA@example.com ',consent:true};
+assert.equal((await signup(data,{origin:'https://other.test'})).status,403);
+assert.equal((await signup({...data,email:'invalid'})).status,400);
+assert.equal((await signup({...data,consent:false})).status,400);
+assert.equal((await signup({...data,name:'a'.repeat(101)})).status,400);
+assert.equal((await signup({...data,website:'spam.test'})).status,200);
+assert.equal((await DB.prepare('SELECT COUNT(*) AS total FROM newsletter_subscribers').first()).total,0);
+assert.equal((await signup(data)).status,200);
+assert.equal((await signup({...data,name:'Duplicate'})).status,200);
+assert.equal((await call('/api/subscribers')).status,401);
+const headers={'oai-authenticated-user-id':'owner'};
+let response=await call('/api/subscribers',{headers}),list=await response.json();
+assert.equal(response.status,200);assert.equal(response.headers.get('cache-control'),'no-store');assert.equal(list.total,1);assert.equal(list.subscribers[0].email,'amina@example.com');assert.equal(list.subscribers[0].name,'Amina Khan');
+assert.equal((await DB.prepare('SELECT consent_version FROM newsletter_subscribers').first()).consent_version,'newsletter-signup-v1');
+assert.equal((await call('/api/subscribers?page=-1',{headers})).status,400);
+const publicData=await (await call('/api/content')).json();assert.equal(publicData.subscribers,undefined);
+await Promise.all(Array.from({length:51},(_,i)=>signup({email:`member${i}@example.com`,consent:true})));
+list=await(await call('/api/subscribers?page=1',{headers})).json();assert.equal(list.total,52);assert.equal(list.subscribers.length,50);
+const second=await(await call('/api/subscribers?page=2',{headers})).json();assert.equal(second.subscribers.length,2);assert.equal(new Set([...list.subscribers,...second.subscribers].map(x=>x.id)).size,52);
+// Execute the real footer submit handler against the Worker and real SQLite DB.
+const status={textContent:''},submit={disabled:false};const form={querySelector:s=>s==='button'?submit:status,reset(){this.didReset=true}};
+class FormDataMock{get(k){return {name:'Footer signup',email:'footer@example.com',consent:'on',website:''}[k]}}
+const context={$:s=>s==='#newsletter-signup'?form:null,FormData:FormDataMock,location:{protocol:'https:'},fetch:(path,options)=>call(path,{...options,headers:{...options.headers,origin}}),me:{signedIn:false},adminTab:'gallery',console};
+vm.createContext(context);vm.runInContext(fs.readFileSync('web/subscribers.js','utf8'),context);vm.runInContext('bindNewsletterSignup()',context);await form.onsubmit({preventDefault(){}});assert.equal(form.didReset,true);assert.equal(submit.disabled,false);assert.match(status.textContent,/newsletter list/);
+list=await(await call('/api/subscribers',{headers})).json();assert.equal(list.total,53);assert.ok(list.subscribers.find(x=>x.email==='footer@example.com'));
+for(const script of fs.readFileSync('dist/preview.html','utf8').matchAll(/<script>([\s\S]*?)<\/script>/g))new vm.Script(script[1]);
+DB.close();
+console.log('Passed: signup consent/validation, footer submission, durable SQL records, deduplication, admin-only access, pagination, no public subscriber leakage, and preview syntax.');

@@ -1,6 +1,7 @@
 import {readFileSync,writeFileSync,mkdirSync,copyFileSync} from 'node:fs';
 const html=readFileSync('web/index.html','utf8')
- .replace('</style>',readFileSync('web/motion.css','utf8')+'\n</style>')
+ .replace('</style>',readFileSync('web/motion.css','utf8')+'\n'+readFileSync('web/home.css','utf8')+'\n</style>')
+ .replace('render();Promise.allSettled',readFileSync('web/subscribers.js','utf8')+'\nrender();Promise.allSettled')
  .replace('</body>','<script>'+readFileSync('web/motion.js','utf8')+'</script></body>');
 const logo=readFileSync('web/logo.jpg').toString('base64');
 const worker=readFileSync('worker/index.js','utf8');
@@ -17,3 +18,4 @@ const preview=html.replaceAll('/logo.jpg','data:image/jpeg;base64,'+logo)
  .replace('f.onsubmit=async e=>{e.preventDefault();','f.onsubmit=async e=>{e.preventDefault();f.querySelector(".status").textContent="Design preview only. Publishing requires the hosted Site.";return;')
  .replace('<body>','<body><div style="padding:7px 16px;background:#fff3d7;color:#64490a;text-align:center;font-size:11px">Design preview · Login, uploads, and publishing require the hosted Site.</div>');
 writeFileSync('dist/preview.html',preview);
+writeFileSync('preview.html',preview);
