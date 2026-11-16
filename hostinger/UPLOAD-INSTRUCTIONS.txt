@@ -1,0 +1,49 @@
+MERCY FOR HUMANITY — HOSTINGER PACKAGE
+
+1. In Hostinger choose a Custom PHP/HTML website, then File Manager.
+   Use PHP 8.3 or newer. This package needs no Node.js or database import.
+2. Upload the ZIP into public_html and extract its contents there.
+   index.php, api.php, config.php, .htaccess, app/, and assets/ must be
+   directly inside public_html, not inside another enclosing folder.
+   If your empty hosting account has a default index.html or default.php,
+   rename that default file so the new index.php is the entry point.
+3. In File Manager open config.php with Edit. Copy the value labelled
+   installation_key. Do not share this key or publish config.php as text.
+4. Open https://YOUR-DOMAIN/login (or use Admin login in the footer).
+   Enter the installation key, your email, and a new admin password of
+   at least 12 characters. You choose the password; no default account exists.
+   First-time setup locks once the account has been created.
+5. Sign in through /login for future content management.
+
+WHAT WORKS
+- All public pages, supplied photos, gallery navigation, and hero slideshow.
+- Gallery photo uploads and deletion.
+- Newsletter cover photos, titles, publication, and deletion.
+- Newsletter signup and the private subscriber list.
+- Volunteer enquiries and contact messages saved to their admin inboxes.
+
+STORAGE AND UPDATES
+The site automatically creates a private mercyforhumanity-data folder next
+to public_html. Uploads, subscribers, submissions, and the admin account
+are stored there. The folder must be writable by PHP. If Hostinger blocks
+creating the folder, create it alongside public_html using File Manager
+and grant your hosting user write access. Do not place it inside public_html.
+Back up this folder regularly. Keep it when uploading future code updates.
+This archive contains no live account, existing uploaded media, or real
+subscriber data, and does not overwrite a separately stored data folder.
+
+The example newsletter is replaced on the public pages once you publish
+a real newsletter. Newsletter signup collects the list; automatic bulk
+email delivery and email notifications are not configured. Contact and
+volunteer submissions are available in the admin area.
+
+Donation links remain a placeholder until an external donation URL is set
+in config.php's donation_url setting. Payment processing is not included.
+
+Use an HTTPS domain for administration. The PHP session cookie is HttpOnly
+and SameSite=Strict, and is Secure on HTTPS. The package includes protected
+PHP sessions, password hashing, CSRF checks, input validation, rate limits,
+image validation, and private storage outside the public website.
+
+IMPORTANT: Upload and extract using File Manager. The AI backup-migration
+screen is not required and may reject custom application archives.

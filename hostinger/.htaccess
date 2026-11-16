@@ -1,0 +1,10 @@
+Options -Indexes
+DirectoryIndex index.php
+<FilesMatch "^(config\.php|\.user\.ini|.*\.(bak|log|sql|zip|tar|gz))$">
+    Require all denied
+</FilesMatch>
+RewriteEngine On
+RewriteRule ^(?:app|mercyforhumanity-data)(?:/|$) - [F,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]

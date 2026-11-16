@@ -26,7 +26,7 @@ const second=await(await call('/api/subscribers?page=2',{headers})).json();asser
 // Execute the real footer submit handler against the Worker and real SQLite DB.
 const status={textContent:''},submit={disabled:false};const form={querySelector:s=>s==='button'?submit:status,reset(){this.didReset=true}};
 class FormDataMock{get(k){return {name:'Footer signup',email:'footer@example.com',consent:'on',website:''}[k]}}
-const context={$:s=>s==='#newsletter-signup'?form:null,FormData:FormDataMock,location:{protocol:'https:'},fetch:(path,options)=>call(path,{...options,headers:{...options.headers,origin}}),me:{signedIn:false},adminTab:'gallery',console};
+const context={$:s=>s==='#newsletter-signup'?form:null,FormData:FormDataMock,location:{protocol:'https:'},siteFetch:(path,options)=>call(path,{...options,headers:{...options.headers,origin}}),me:{signedIn:false},adminTab:'gallery',console};
 vm.createContext(context);vm.runInContext(fs.readFileSync('web/subscribers.js','utf8'),context);vm.runInContext('bindNewsletterSignup()',context);await form.onsubmit({preventDefault(){}});assert.equal(form.didReset,true);assert.equal(submit.disabled,false);assert.match(status.textContent,/newsletter list/);
 list=await(await call('/api/subscribers',{headers})).json();assert.equal(list.total,53);assert.ok(list.subscribers.find(x=>x.email==='footer@example.com'));
 for(const script of fs.readFileSync('dist/preview.html','utf8').matchAll(/<script>([\s\S]*?)<\/script>/g))new vm.Script(script[1]);

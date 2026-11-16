@@ -5,6 +5,9 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "node scripts/check.mjs",
-    "db:generate": "node scripts/generate-migrations.mjs"
+    "db:generate": "node scripts/generate-migrations.mjs",
+    "build:hostinger": "node scripts/build-hostinger.mjs",
+    "package:hostinger": "node scripts/package-hostinger.mjs",
+    "test:hostinger": "node scripts/hostinger-check.mjs"
   }
 }

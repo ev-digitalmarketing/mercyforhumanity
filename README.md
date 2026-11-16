@@ -1,47 +1,45 @@
 # Mercy for Humanity
 
-All project files live in `/Users/h/sites/mercyforhumanity/`. Open `preview.html` for the standalone design preview. Downloadable archives belong in the ignored `outputs/` folder; compiled Worker files and an additional preview are in `dist/`.
+Canadian charity website for the Ahmadiyya Muslim Elders Association. Blue and navy are the primary colours, red is secondary, headings use Montserrat, and body text uses Open Sans. The three supplied community photographs are local assets. The homepage has an accessible slideshow, regional runs, and newsletter highlights.
 
-Responsive charity website for the Ahmadiyya Muslim Elders Association. Built with dependency-free HTML/CSS/JavaScript and a Cloudflare Worker. Montserrat headings and Open Sans body text load through Google Fonts; system fallbacks are included.
+All files stay inside `/Users/h/sites/mercyforhumanity/`. Generated archives belong in ignored `outputs/`; `preview.html` is a standalone design preview.
 
-## Commands
+## Hostinger deployment
 
-`node scripts/build.mjs` creates `dist/server/index.js` with the supplied logo embedded.
+The production upload artifact is **`outputs/mercy-for-humanity-hostinger.zip`**. The generic `outputs/mercy-for-humanity.zip` is now a copy of this Hostinger deployment ZIP, rather than the previous source archive. The ZIP contains `index.php` at its root and only files required by the PHP website. No Node.js install, Cloudflare service, ChatGPT sign-in, or separate database import is required.
 
-`node scripts/test.mjs` verifies the Worker API with an in-memory R2 implementation.
+1. Choose a **Custom PHP/HTML** website on Hostinger with PHP 8.3 or newer.
+2. Upload and extract the ZIP directly into `public_html` using File Manager. Use manual setup rather than the AI backup importer. Keep `.htaccess` and `.user.ini` from the ZIP. Rename any default hosting `index.html` or `default.php` so `index.php` is the entry point.
+3. Open the generated `config.php` with File Manager's editor and copy `installation_key`. This key is private; do not publish the file as text or share the ZIP publicly before setup.
+4. Open `/login` on your HTTPS website. Enter the key, choose your admin email and a password of at least 12 characters, and create the account. Setup locks after the first account exists. There is no default username or password.
 
-`node scripts/gallery-test.mjs` checks lightbox navigation, wrapping, keyboard controls, and script syntax.
+The backend automatically creates **`mercyforhumanity-data` alongside `public_html`**, outside the public website. It holds the password hash, uploaded images, newsletter records, subscribers, volunteer enquiries, and contact messages. PHP must be able to create and write this directory. If permissions prevent automatic creation, create that private directory with File Manager and grant your hosting user write access. Never move it inside `public_html`. Back it up regularly and preserve it during future code updates. The ZIP includes no live records or credentials for an existing installation.
 
-`node scripts/check.mjs` builds the site and runs all API, gallery, subscriber, and homepage checks. Subscriber tests use real SQLite through Node's built-in `node:sqlite` module (Node 24 recommended).
+## Working features
 
-`node scripts/preview.mjs` runs a loopback-only preview on port 4173. Local preview supplies a mock owner identity and stores data in ignored `.local-data/`. This preview authentication adapter is never included in the deployed Worker.
+- Public pages, hero slideshow, reduced-motion support, and keyboard-accessible gallery navigation.
+- Admin login using PHP sessions, hashed passwords, CSRF checks, and login rate limits.
+- Gallery uploads and deletion, with server-side image validation and random filenames.
+- Newsletter publishing with cover image, title, and plain-text paragraphs. An explicitly labelled example appears until the first real publication.
+- Newsletter signup with consent, normalized email deduplication, and an authenticated paginated subscriber list.
+- Volunteer submissions with Email / phone and Canadian location, saved to the Volunteers admin inbox.
+- Contact messages saved to the Messages admin inbox.
 
-## Hosted content management
+File-backed records use advisory locks and atomic replacement. All private data stays outside the public directory. Public API responses do not expose admin credentials, subscribers, or inbox submissions. The bundled PHP configuration includes an optional `donation_url` for the external Donate button; it remains a placeholder until supplied. Payment processing is external. Newsletter signup collects the list and newsletters are published on the website; automatic bulk email delivery and email notifications are not configured. Unconfirmed event dates, routes, partners, and contact details remain placeholders.
 
-The hosting manifest requests an R2 bucket bound as `BUCKET`. Gallery photos and newsletters persist in R2. Each newsletter has a cover image, title, and plain-text body preserving paragraphs. The manager supports previews, publication, and deletion.
+## Build and check
 
-The footer newsletter signup saves an optional name, normalized email address, signup timestamp, and consent version in D1 bound as `DB`. Duplicate emails retain their original signup. The admin's **Subscribers** tab shows names, email addresses, and dates, with pagination through the entire list. Subscriber records are never included in public content responses. The signup endpoint requires explicit consent and same-origin JSON submissions, validates input, and includes a honeypot field. This collects a mailing list; automatic email delivery is not connected.
+Use Node 24 for the development scripts:
 
-The schema is in `db/schema.sql`; `node scripts/generate-migrations.mjs` generates the initial schema-only migration and Sites-compatible journal in `drizzle/`. Existing migration files must not be rewritten. The deployment archive includes these migrations; Sites applies them during publication. Local preview applies migrations to `.local-data/subscribers.sqlite` at startup. Local and hosted databases are separate. The standalone HTML design preview does not save signups or contain actual subscriber data.
+```sh
+node scripts/build-hostinger.mjs
+node scripts/check.mjs
+node scripts/hostinger-check.mjs
+node scripts/package-hostinger.mjs
+```
 
-The `/login` page uses Sites' ChatGPT sign-in. Hosted write operations require authenticated identity and same-origin requests, and rely on the Site's **owner-only platform access policy**. Keep this Site private. Before making the charity website public, introduce an explicit server-side administrator allowlist or supported role integration; signed-in identity alone must not grant public visitors write access.
+The package script verifies ZIP integrity and required root files. The Hostinger check verifies the compiled frontend, API routing, CSRF/session handoff, and package structure. If PHP is installed it also runs PHP lint and `scripts/test-hostinger.php`; otherwise it explicitly reports those runtime checks as not run. This development Mac currently has no PHP executable, so native PHP execution and browser/server QA on the hosting account remain unverified.
 
-## Placeholders
+Source is in `web/` and `hostinger/`. A unique installation key is cached only in ignored `.local-data/` and written to the generated ZIP's PHP configuration. Regenerating a ZIP preserves that local installation key. Never commit generated keys, runtime records, or uploads.
 
-Contact and volunteer forms are labelled preview forms and send/store no details. Donate uses an external destination; set `DONATION_URL` near the top of the script in `web/index.html`. Until the destination is supplied, it shows a link-coming-soon notice. There is no payment processing UI. Contact information, event dates, locations, partners, and registration details are placeholders. The three supplied community-run photos are stored in `web/images/`, reused across the website, and embedded in the Worker and standalone preview. No stock-photo URLs remain. The gallery shows these three photos until uploads replace them. The supplied logo is unchanged.
-
-## Environment limitation
-
-The supplied Vinext starter could not install dependencies because this machine lacks npm. This site therefore uses a dependency-free Worker build. Source synchronization still requires a working Git executable and network access.
-
-## Motion and gallery
-
-Blue is the primary palette; red is the secondary colour on the Donate button, service ribbon icons, newsletter highlights, and signup action. The homepage introduces the Islamic inspiration for the work and highlights the three most recent published newsletters. The bundled example issue in `web/example-newsletter.json` appears on the homepage and newsletter page until a real newsletter is published. It is marked as an example and does not claim completed events or confirmed dates. The admin identifies it as an example rather than offering a delete action on the bundled fallback. Shared easing coordinates scroll reveals, staggered entrances, page fades, hover feedback, drifting hero photography, floating icons, and animated blue backgrounds. A footer control pauses motion, and OS reduced-motion preferences are respected.
-
-Gallery photos have no visible captions or description fields. The lightbox has previous/next buttons, left/right keyboard navigation, a position counter, and wraparound. Escape and the close button dismiss it.
-
-Regional charity runs are listed by city, including Windsor, Guelph, Hamilton, and Edmonton. There are no cycling/hiking categories or activity filters. Dates, venues, routes, partners, and registration remain to be confirmed.
-
-Volunteer form: the required **Email / phone** text field accepts either contact method. **Location** asks for a Canadian city, province, or territory rather than an area of interest. The form remains a clearly labelled preview and does not submit or store volunteer details. Public copy uses Canadian English and centres Canadian communities and regional charity runs; addresses and other unconfirmed details remain placeholders.
-
-The homepage hero cycles through the three bundled community photographs every six seconds with a crossfade. It includes previous/next arrows, slide dots, and a pause/play control. Playback pauses on hover, keyboard focus, hidden tabs, and offscreen viewing; reduced-motion settings and the global Pause motion control disable automatic playback. Manual navigation remains available.
+The earlier Cloudflare Worker, D1 migration, and Node preview adapter remain in the repository as legacy development artifacts. They are excluded from the Hostinger upload ZIP. Their API tests remain useful regression checks; they do not constitute native PHP runtime verification.
