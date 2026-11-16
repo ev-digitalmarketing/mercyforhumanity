@@ -2,6 +2,10 @@ const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control
 export default {async fetch(req,env){
  try {
  const url=new URL(req.url),p=url.pathname;
+ if(p.startsWith('/assets/')){
+  if(!Object.hasOwn(ASSETS,p))return new Response('Not found',{status:404});
+  return new Response(Uint8Array.from(atob(ASSETS[p]),c=>c.charCodeAt(0)),{headers:{'Content-Type':'image/jpeg','Cache-Control':'public,max-age=86400','X-Content-Type-Options':'nosniff'}});
+ }
  if(p==='/logo.jpg')return new Response(Uint8Array.from(atob(LOGO),c=>c.charCodeAt(0)),{headers:{'Content-Type':'image/jpeg','Cache-Control':'public,max-age=86400'}});
  const user=req.headers.get('oai-authenticated-user-id');
  if(p==='/api/me')return json({signedIn:!!user,email:req.headers.get('oai-authenticated-user-email')||''});
@@ -15,7 +19,7 @@ export default {async fetch(req,env){
   for(const type of Object.keys(result)){
    let cursor;do{const list=await env.BUCKET.list({prefix:type+'/',cursor});const records=await Promise.all(list.objects.map(async o=>{const value=await env.BUCKET.get(o.key);return value?value.json():null}));result[type].push(...records.filter(Boolean));cursor=list.truncated?list.cursor:undefined}while(cursor);
    result[type].sort((a,b)=>b.created.localeCompare(a.created));
-  }return json(result);
+  }if(!result.newsletters.length)result.newsletters.push(EXAMPLE_NEWSLETTER);return json(result);
  }
  if(p==='/api/subscribe'&&req.method==='POST'){
   if(req.headers.get('origin')!==url.origin)return json({error:'Please submit the form from this website.'},403);

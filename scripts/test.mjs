@@ -17,6 +17,7 @@ for(const path of ['gallery','newsletters']){
  const list=await(await call('/api/content')).json();assert.equal(list[path].length,1);
  assert.equal((await call('/api/'+path+'/'+item.id,{method:'DELETE',headers})).status,200);
  assert.equal((await call(item.image)).status,404);
- assert.equal((await(await call('/api/content')).json())[path].length,0);
+ const after=(await(await call('/api/content')).json())[path];
+ if(path==='newsletters'){assert.equal(after.length,1);assert.equal(after[0].example,true)}else assert.equal(after.length,0);
 }
 console.log('Passed: routes, logo, authentication, origin checks, upload validation, gallery/newsletter persistence, media retrieval, deletion.');
