@@ -41,3 +41,5 @@ Blue is the primary palette; red is the secondary colour on the Donate button, s
 Gallery photos have no visible captions or description fields. The lightbox has previous/next buttons, left/right keyboard navigation, a position counter, and wraparound. Escape and the close button dismiss it.
 
 Regional charity runs are listed by city, including Windsor, Guelph, Hamilton, and Edmonton. There are no cycling/hiking categories or activity filters. Dates, venues, routes, partners, and registration remain to be confirmed.
+
+Volunteer form: the required **Email / phone** text field accepts either contact method. **Location** asks for a Canadian city, province, or territory rather than an area of interest. The form remains a clearly labelled preview and does not submit or store volunteer details. Public copy uses Canadian English and centres Canadian communities and regional charity runs; addresses and other unconfirmed details remain placeholders.
