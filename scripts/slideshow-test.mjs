@@ -1,0 +1,28 @@
+import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
+const observers=[],timers=new Map(),docEvents={},mediaEvents={};let nextTimer=0,pausedGlobally=false;
+const media={matches:false,addEventListener(k,f){mediaEvents[k]=f},removeEventListener(k){delete mediaEvents[k]}};
+const slides=Array.from({length:3},()=>({active:false,classList:{toggle(k,on){this.owner.active=on}},setAttribute(k,v){this[k]=v}}));slides.forEach(x=>x.classList.owner=x);
+const button=(dataset={},attributes=[])=>({dataset,attributes:new Map(attributes.map(k=>[k,''])),setAttribute(k,v){this.attributes.set(k,v)},hasAttribute(k){return this.attributes.has(k)}});
+const dots=[0,1,2].map(i=>button({heroSlide:String(i)})),pause=button({},['data-hero-pause']),counter={},events={};
+let carousel={querySelectorAll:s=>s==='.hero-slide'?slides:dots,querySelector:s=>s==='[data-hero-pause]'?pause:counter,addEventListener(k,f){events[k]=f},contains:x=>x===pause};
+const document={hidden:false,documentElement:{hasAttribute:()=>pausedGlobally},querySelector:s=>s==='main'?{}:carousel,addEventListener(k,f){docEvents[k]=f},removeEventListener(k){delete docEvents[k]}};
+class Observer{constructor(callback){this.callback=callback;observers.push(this)}observe(target){this.target=target}disconnect(){this.disconnected=true}}
+const context={document,window:{},matchMedia:()=>media,MutationObserver:Observer,setInterval(fn,ms){const id=++nextTimer;timers.set(id,{fn,ms});return id},clearInterval(id){timers.delete(id)}};
+vm.createContext(context);vm.runInContext(fs.readFileSync('web/hero-slideshow.js','utf8'),context);
+const active=()=>slides.findIndex(x=>x.active),click=b=>events.click({target:{closest:()=>b}});
+assert.equal(active(),0);assert.equal(timers.size,1);assert.equal([...timers.values()][0].ms,6000);
+[...timers.values()][0].fn();assert.equal(active(),1);assert.equal(counter.textContent,'2 / 3');assert.equal(dots[1].attributes.get('aria-pressed'),'true');
+click(button({heroStep:'-1'}));assert.equal(active(),0);
+events.keydown({key:'ArrowLeft',preventDefault(){}});assert.equal(active(),2);
+click(dots[1]);assert.equal(active(),1);
+click(pause);assert.equal(timers.size,0);click(pause);assert.equal(timers.size,1);
+events.mouseenter();assert.equal(timers.size,0);events.mouseleave();assert.equal(timers.size,1);
+events.focusin();assert.equal(timers.size,0);events.focusout({relatedTarget:null});assert.equal(timers.size,1);
+document.hidden=true;docEvents.visibilitychange();assert.equal(timers.size,0);document.hidden=false;docEvents.visibilitychange();assert.equal(timers.size,1);
+pausedGlobally=true;observers[0].callback();assert.equal(timers.size,0);assert.equal(pause.disabled,true);
+pausedGlobally=false;observers[0].callback();assert.equal(timers.size,1);
+media.matches=true;mediaEvents.change();assert.equal(timers.size,0);click(dots[0]);assert.equal(active(),0);assert.equal(timers.size,0);
+media.matches=false;mediaEvents.change();assert.equal(timers.size,1);
+const mountObserver=observers.at(-1),observerCount=observers.length;mountObserver.callback();assert.equal(observers.length,observerCount);assert.equal(timers.size,1);
+carousel=null;mountObserver.callback();assert.equal(timers.size,0);assert.equal(docEvents.visibilitychange,undefined);
+console.log('Passed: slideshow autoplay, arrows/dots, wrapping, pause/play, hover/focus/visibility handling, reduced motion, and timer cleanup on navigation.');

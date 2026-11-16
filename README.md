@@ -43,3 +43,5 @@ Gallery photos have no visible captions or description fields. The lightbox has 
 Regional charity runs are listed by city, including Windsor, Guelph, Hamilton, and Edmonton. There are no cycling/hiking categories or activity filters. Dates, venues, routes, partners, and registration remain to be confirmed.
 
 Volunteer form: the required **Email / phone** text field accepts either contact method. **Location** asks for a Canadian city, province, or territory rather than an area of interest. The form remains a clearly labelled preview and does not submit or store volunteer details. Public copy uses Canadian English and centres Canadian communities and regional charity runs; addresses and other unconfirmed details remain placeholders.
+
+The homepage hero cycles through the three bundled community photographs every six seconds with a crossfade. It includes previous/next arrows, slide dots, and a pause/play control. Playback pauses on hover, keyboard focus, hidden tabs, and offscreen viewing; reduced-motion settings and the global Pause motion control disable automatic playback. Manual navigation remains available.
