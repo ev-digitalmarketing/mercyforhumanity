@@ -3,9 +3,9 @@ const example=JSON.parse(readFileSync('web/example-newsletter.json','utf8'));
 const assets=Object.fromEntries(readdirSync('web/images').filter(name=>name.endsWith('.jpg')).map(name=>['/assets/'+name,readFileSync('web/images/'+name).toString('base64')]));
 const html=readFileSync('web/index.html','utf8')
  .replace('/* EXAMPLE_NEWSLETTER */',JSON.stringify(example))
- .replace('</style>',readFileSync('web/motion.css','utf8')+'\n'+readFileSync('web/home.css','utf8')+'\n'+readFileSync('web/hero-slideshow.css','utf8')+'\n</style>')
+ .replace('</style>',readFileSync('web/motion.css','utf8')+'\n'+readFileSync('web/home.css','utf8')+'\n'+readFileSync('web/hero-slideshow.css','utf8')+'\n'+readFileSync('web/run-slider.css','utf8')+'\n</style>')
  .replace('render();Promise.allSettled',readFileSync('web/subscribers.js','utf8')+'\n'+readFileSync('web/hostinger.js','utf8')+'\nrender();Promise.allSettled')
- .replace('</body>','<script>'+readFileSync('web/motion.js','utf8')+'</script><script>'+readFileSync('web/hero-slideshow.js','utf8')+'</script></body>');
+ .replace('</body>','<script>'+readFileSync('web/motion.js','utf8')+'</script><script>'+readFileSync('web/hero-slideshow.js','utf8')+'</script><script>'+readFileSync('web/run-slider.js','utf8')+'</script></body>');
 const logo=readFileSync('web/logo.jpg').toString('base64');
 const worker=readFileSync('worker/index.js','utf8');
 mkdirSync('dist/server',{recursive:true});

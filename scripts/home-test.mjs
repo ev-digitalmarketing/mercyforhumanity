@@ -10,6 +10,6 @@ context.content.newsletters=Array.from({length:4},(_,i)=>({title:'Issue '+(i+1),
 const latest=vm.runInContext('newsletterHighlights()',context);assert.match(latest,/Issue 3/);assert.doesNotMatch(latest,/Issue 4/);assert.equal((latest.match(/data-news=/g)||[]).length,3);
 assert.match(vm.runInContext('newsCards()',context),/Issue 4/);
 context.content.newsletters=[JSON.parse(fs.readFileSync('web/example-newsletter.json','utf8'))];assert.match(vm.runInContext('newsletterHighlights()',context),/Example newsletter/);
-const regional=vm.runInContext('runs()',context);for(const city of ['Windsor','Guelph','Hamilton','Edmonton'])assert.match(regional,new RegExp('Run for '+city));assert.doesNotMatch(regional,/data-filter|Cycling|Hiking|filter-tabs/);assert.match(regional,/Date and venue to be confirmed/);
+const regional=vm.runInContext('runs()',context);for(const city of ['Windsor','Guelph','Hamilton','Edmonton','Airdrie','Winnipeg','Lloyd'])assert.match(regional,new RegExp('Run for '+city));assert.doesNotMatch(regional,/data-filter|Cycling|Hiking|filter-tabs/);assert.doesNotMatch(regional,/Date and venue|All are welcome|Enquire|Run or walk with your community/);assert.equal((regional.match(/class="run-website"/g)||[]).length,7);assert.match(empty,/data-run-slider/);
 assert.match(html,/id="newsletter-signup"/);assert.match(html,/name="consent" type="checkbox" required/);
 console.log('Passed: faith-focused hero, caption cleanup, latest-three newsletter highlights, full newsletter archive, and footer signup form.');
