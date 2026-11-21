@@ -6,7 +6,7 @@ const origin='https://mercy.test';
 const call=(p,options={})=>worker.fetch(new Request(origin+p,options),{BUCKET});
 const headers={'oai-authenticated-user-id':'owner',origin};
 assert.equal((await call('/')).status,200);
-assert.equal((await call('/logo.jpg')).headers.get('content-type'),'image/jpeg');
+assert.equal((await call('/logo.png')).headers.get('content-type'),'image/png');
 assert.equal((await call('/api/gallery',{method:'POST'})).status,401);
 assert.equal((await call('/api/gallery',{method:'POST',headers:{...headers,origin:'https://wrong.test'}})).status,403);
 function form(news=false,type='image/png'){const d=new FormData();if(news)d.set('title','Test <story>');d.set('photo',new Blob(['image bytes'],{type}),'photo.png');if(news)d.set('body','A story\n\nWith paragraphs.');return d}

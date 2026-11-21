@@ -5,7 +5,7 @@ fs.rmSync(archive,{force:true});
 execFileSync('/usr/bin/zip',['-q','-r',archive,'.'],{cwd:'outputs/hostinger-package'});
 execFileSync('/usr/bin/unzip',['-tq',archive]);
 const entries=execFileSync('/usr/bin/unzip',['-Z1',archive],{encoding:'utf8'}).split('\n');
-for(const required of ['index.php','api.php','config.php','.htaccess','.user.ini','app/core.php','app/site.html','logo.jpg','assets/community-run-group.jpg','UPLOAD-INSTRUCTIONS.txt'])assert(entries.includes(required),'Missing '+required);
+for(const required of ['index.php','api.php','config.php','.htaccess','.user.ini','app/core.php','app/site.html','logo.png','assets/community-run-group.jpg','UPLOAD-INSTRUCTIONS.txt'])assert(entries.includes(required),'Missing '+required);
 assert(!entries.some(name=>/^(?:\.git|node_modules|outputs|dist|web|mercyforhumanity-data)\//.test(name)));
 fs.copyFileSync(archive,'outputs/mercy-for-humanity.zip');
 console.log('Verified upload archive: '+archive+' ('+(fs.statSync(archive).size/1024/1024).toFixed(1)+' MB)');

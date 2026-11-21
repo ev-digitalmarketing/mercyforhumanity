@@ -3,15 +3,15 @@ const example=JSON.parse(readFileSync('web/example-newsletter.json','utf8'));
 const assets=Object.fromEntries(readdirSync('web/images').filter(name=>name.endsWith('.jpg')).map(name=>['/assets/'+name,readFileSync('web/images/'+name).toString('base64')]));
 const html=readFileSync('web/index.html','utf8')
  .replace('/* EXAMPLE_NEWSLETTER */',JSON.stringify(example))
- .replace('</style>',readFileSync('web/motion.css','utf8')+'\n'+readFileSync('web/home.css','utf8')+'\n'+readFileSync('web/hero-slideshow.css','utf8')+'\n'+readFileSync('web/run-slider.css','utf8')+'\n'+readFileSync('web/premium.css','utf8')+'\n</style>')
- .replace('render();Promise.allSettled',readFileSync('web/subscribers.js','utf8')+'\n'+readFileSync('web/hostinger.js','utf8')+'\nrender();Promise.allSettled')
+ .replace('</style>',readFileSync('web/motion.css','utf8')+'\n'+readFileSync('web/home.css','utf8')+'\n'+readFileSync('web/hero-slideshow.css','utf8')+'\n'+readFileSync('web/run-slider.css','utf8')+'\n'+readFileSync('web/premium.css','utf8')+'\n'+readFileSync('web/navigation.css','utf8')+'\n</style>')
+ .replace('render();Promise.allSettled',readFileSync('web/subscribers.js','utf8')+'\n'+readFileSync('web/hostinger.js','utf8')+'\n'+readFileSync('web/navigation.js','utf8')+'\nrender();Promise.allSettled')
  .replace('</body>','<script>'+readFileSync('web/motion.js','utf8')+'</script><script>'+readFileSync('web/hero-slideshow.js','utf8')+'</script><script>'+readFileSync('web/run-slider.js','utf8')+'</script><script>'+readFileSync('web/premium.js','utf8')+'</script></body>');
-const logo=readFileSync('web/logo.jpg').toString('base64');
+const logo=readFileSync('web/logo.png').toString('base64');
 const worker=readFileSync('worker/index.js','utf8');
 mkdirSync('dist/server',{recursive:true});
 writeFileSync('dist/server/index.js',`const HTML=${JSON.stringify(html)};\nconst LOGO=${JSON.stringify(logo)};\nconst ASSETS=${JSON.stringify(assets)};\nconst EXAMPLE_NEWSLETTER=${JSON.stringify(example)};\n${worker}`);
 // Portable design review only; real content management runs on the hosted Worker.
-let preview=html.replaceAll('/logo.jpg','data:image/jpeg;base64,'+logo)
+let preview=html.replaceAll('/logo.png','data:image/png;base64,'+logo)
  .replace('const path=location.pathname;','const path=(location.hash.slice(1)||"/").split("?")[0];')
  .replaceAll('new URLSearchParams(location.search)','new URLSearchParams(location.hash.split("?")[1]||"")')
  .replace("history.pushState({},'',href)","history.pushState({},'','#'+href)")

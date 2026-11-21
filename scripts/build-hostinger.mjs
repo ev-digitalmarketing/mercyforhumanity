@@ -12,11 +12,11 @@ for(const file of ['core.php','.htaccess'])fs.copyFileSync('hostinger/app/'+file
 fs.writeFileSync(directory+'/config.php',fs.readFileSync('hostinger/config.example.php','utf8').replace('__INSTALLATION_KEY__',key));
 fs.copyFileSync('web/example-newsletter.json',directory+'/app/example-newsletter.json');
 fs.mkdirSync(directory+'/assets',{recursive:true});for(const file of fs.readdirSync('web/images'))fs.copyFileSync('web/images/'+file,directory+'/assets/'+file);
-fs.copyFileSync('web/logo.jpg',directory+'/logo.jpg');
+fs.copyFileSync('web/logo.png',directory+'/logo.png');
 let html=fs.readFileSync('web/index.html','utf8')
  .replace('/* EXAMPLE_NEWSLETTER */',fs.readFileSync('web/example-newsletter.json','utf8').trim())
- .replace('</style>',['web/motion.css','web/home.css','web/hero-slideshow.css','web/run-slider.css','web/premium.css'].map(file=>fs.readFileSync(file,'utf8')).join('\n')+'\n</style>')
- .replace('render();Promise.allSettled',fs.readFileSync('web/subscribers.js','utf8')+'\n'+fs.readFileSync('web/hostinger.js','utf8')+'\nrender();Promise.allSettled')
+ .replace('</style>',['web/motion.css','web/home.css','web/hero-slideshow.css','web/run-slider.css','web/premium.css','web/navigation.css'].map(file=>fs.readFileSync(file,'utf8')).join('\n')+'\n</style>')
+ .replace('render();Promise.allSettled',fs.readFileSync('web/subscribers.js','utf8')+'\n'+fs.readFileSync('web/hostinger.js','utf8')+'\n'+fs.readFileSync('web/navigation.js','utf8')+'\nrender();Promise.allSettled')
  .replace('</body>',['web/motion.js','web/hero-slideshow.js','web/run-slider.js','web/premium.js'].map(file=>'<script>'+fs.readFileSync(file,'utf8')+'</script>').join('')+'</body>');
 fs.writeFileSync(directory+'/app/site.html',html);
 fs.copyFileSync('hostinger/UPLOAD-INSTRUCTIONS.txt',directory+'/UPLOAD-INSTRUCTIONS.txt');
