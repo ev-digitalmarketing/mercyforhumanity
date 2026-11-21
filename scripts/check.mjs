@@ -6,3 +6,4 @@ await import('./home-test.mjs');
 await import('./content-test.mjs');
 await import('./slideshow-test.mjs');
 await import('./run-slider-test.mjs');
+await import('./premium-test.mjs');

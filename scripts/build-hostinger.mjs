@@ -15,9 +15,9 @@ fs.mkdirSync(directory+'/assets',{recursive:true});for(const file of fs.readdirS
 fs.copyFileSync('web/logo.jpg',directory+'/logo.jpg');
 let html=fs.readFileSync('web/index.html','utf8')
  .replace('/* EXAMPLE_NEWSLETTER */',fs.readFileSync('web/example-newsletter.json','utf8').trim())
- .replace('</style>',['web/motion.css','web/home.css','web/hero-slideshow.css','web/run-slider.css'].map(file=>fs.readFileSync(file,'utf8')).join('\n')+'\n</style>')
+ .replace('</style>',['web/motion.css','web/home.css','web/hero-slideshow.css','web/run-slider.css','web/premium.css'].map(file=>fs.readFileSync(file,'utf8')).join('\n')+'\n</style>')
  .replace('render();Promise.allSettled',fs.readFileSync('web/subscribers.js','utf8')+'\n'+fs.readFileSync('web/hostinger.js','utf8')+'\nrender();Promise.allSettled')
- .replace('</body>',['web/motion.js','web/hero-slideshow.js','web/run-slider.js'].map(file=>'<script>'+fs.readFileSync(file,'utf8')+'</script>').join('')+'</body>');
+ .replace('</body>',['web/motion.js','web/hero-slideshow.js','web/run-slider.js','web/premium.js'].map(file=>'<script>'+fs.readFileSync(file,'utf8')+'</script>').join('')+'</body>');
 fs.writeFileSync(directory+'/app/site.html',html);
 fs.copyFileSync('hostinger/UPLOAD-INSTRUCTIONS.txt',directory+'/UPLOAD-INSTRUCTIONS.txt');
 console.log('Built Hostinger PHP package in '+path.resolve(directory));

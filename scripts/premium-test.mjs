@@ -1,0 +1,22 @@
+import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
+const listeners={},observers=[],frames=new Map();let frameId=0,globalPause=false;
+const classes=()=>({values:new Set(),add(k){this.values.add(k)},remove(k){this.values.delete(k)},toggle(k,on){on?this.add(k):this.remove(k)}});
+const styles=()=>({values:new Map(),setProperty(k,v){this.values.set(k,v)},removeProperty(k){this.values.delete(k)}});
+const card={classList:classes(),style:styles(),isConnected:true,contains:()=>false,getBoundingClientRect:()=>({left:0,top:0,width:200,height:200})};
+const button={classList:classes(),style:styles(),isConnected:true,contains:()=>false,getBoundingClientRect:()=>({left:0,top:0,width:100,height:50})};
+const sceneSection={classList:classes(),querySelector:()=>null,prepend(node){this.scene=node}};
+const main={querySelectorAll:()=>[card]},root={classList:classes(),hasAttribute:()=>globalPause};
+const reduced={matches:false,addEventListener(k,f){this.change=f}},fine={matches:true,addEventListener(k,f){this.change=f}};
+const document={hidden:false,documentElement:root,querySelector:()=>main,querySelectorAll:s=>s.includes('.hero,.page-top')?[sceneSection]:[button],createElement:()=>({setAttribute(k,v){this[k]=v}}),addEventListener(k,f){listeners[k]=f}};
+class Observer{constructor(fn){this.fn=fn;observers.push(this)}observe(){}disconnect(){}}
+const context={document,window:{},matchMedia:q=>q.includes('reduced')?reduced:fine,MutationObserver:Observer,requestAnimationFrame(fn){frames.set(++frameId,fn);return frameId},cancelAnimationFrame:id=>frames.delete(id)};
+vm.createContext(context);vm.runInContext(fs.readFileSync('web/premium.js','utf8'),context);
+assert.equal(sceneSection.scene['aria-hidden'],'true');assert.ok(card.classList.values.has('premium-tilt'));
+const target={closest:s=>s==='.premium-tilt'?card:button};
+listeners.pointermove({target,clientX:180,clientY:20});assert.equal(frames.size,1);const run=()=>{const functions=[...frames.values()];frames.clear();functions.forEach(fn=>fn())};run();
+assert.ok(card.classList.values.has('premium-active'));assert.equal(card.style.values.get('--tilt-x'),'2.40deg');assert.equal(card.style.values.get('--tilt-y'),'2.80deg');assert.ok(parseFloat(button.style.values.get('--magnetic-x'))<=3);
+globalPause=true;observers[0].fn();assert.equal(card.classList.values.has('premium-active'),false);assert.equal(button.style.values.size,0);
+listeners.pointermove({target,clientX:180,clientY:20});assert.equal(frames.size,0);
+globalPause=false;fine.matches=false;listeners.pointermove({target,clientX:180,clientY:20});assert.equal(frames.size,0);
+fine.matches=true;reduced.matches=true;listeners.pointermove({target,clientX:180,clientY:20});assert.equal(frames.size,0);
+console.log('Passed premium decoration accessibility, bounded 3D tilt, button movement, and global/reduced-motion/touch gating.');
