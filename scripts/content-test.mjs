@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';import fs from 'node:fs';import worker from '../dist/server/index.js';
 const BUCKET={async list(){return {objects:[],truncated:false}}};
-for(const name of ['community-run-start.jpg','community-run-awards.jpg','community-run-group.jpg']){
+for(const name of ['community-run-start.jpg','community-run-awards.jpg','community-run-group.jpg','water-project.png']){
  const response=await worker.fetch(new Request('https://mercy.test/assets/'+name),{BUCKET});
- assert.equal(response.status,200);assert.equal(response.headers.get('content-type'),'image/jpeg');
+ assert.equal(response.status,200);assert.equal(response.headers.get('content-type'),name.endsWith('.png')?'image/png':'image/jpeg');
  assert.deepEqual(Buffer.from(await response.arrayBuffer()),fs.readFileSync('web/images/'+name));
 }
 assert.equal((await worker.fetch(new Request('https://mercy.test/assets/missing.jpg'),{BUCKET})).status,404);

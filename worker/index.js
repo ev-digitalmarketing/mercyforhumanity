@@ -4,7 +4,7 @@ export default {async fetch(req,env){
  const url=new URL(req.url),p=url.pathname;
  if(p.startsWith('/assets/')){
   if(!Object.hasOwn(ASSETS,p))return new Response('Not found',{status:404});
-  return new Response(Uint8Array.from(atob(ASSETS[p]),c=>c.charCodeAt(0)),{headers:{'Content-Type':'image/jpeg','Cache-Control':'public,max-age=86400','X-Content-Type-Options':'nosniff'}});
+  return new Response(Uint8Array.from(atob(ASSETS[p]),c=>c.charCodeAt(0)),{headers:{'Content-Type':p.endsWith('.png')?'image/png':'image/jpeg','Cache-Control':'public,max-age=86400','X-Content-Type-Options':'nosniff'}});
  }
  if(p==='/logo.png')return new Response(Uint8Array.from(atob(LOGO),c=>c.charCodeAt(0)),{headers:{'Content-Type':'image/png','Cache-Control':'public,max-age=86400'}});
  const user=req.headers.get('oai-authenticated-user-id');

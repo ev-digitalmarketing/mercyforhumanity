@@ -5,7 +5,7 @@ const regionalData=html.split('\n').filter(line=>line.startsWith('const photos='
 const addon=fs.readFileSync('web/subscribers.js','utf8');
 const context={content:{gallery:[],newsletters:[]},esc:String,encodeURIComponent,button:()=>'<a>Action</a>',band:()=>'',galleryTiles:()=>'',pageTop:(a,b)=>a+b};
 vm.createContext(context);vm.runInContext(regionalData+'\n'+addon+'\n'+functions,context);
-const empty=vm.runInContext('home()',context);assert.match(empty,/Faith in action/);assert.match(empty,/Prophet Muhammad/);assert.match(empty,/Every step\. Every act\. For humanity/);assert.doesNotMatch(empty,/Illustrative photography/);assert.match(empty,/id="latest-newsletters"/);assert.match(empty,/first newsletter is coming soon/);
+const empty=vm.runInContext('home()',context);assert.match(empty,/Faith in action/);assert.match(empty,/Prophet Muhammad/);assert.match(empty,/Every step\. Every act\. For humanity/);assert.doesNotMatch(empty,/Illustrative photography/);assert.match(empty,/id="latest-newsletters"/);assert.equal((empty.match(/class="hero-slide /g)||[]).length,4);assert.match(empty,/water-project\.png/);assert.match(empty,/first newsletter is coming soon/);
 context.content.newsletters=Array.from({length:4},(_,i)=>({title:'Issue '+(i+1),body:'Community news',image:'/issue-'+i,created:'2026-11-16T00:00:00Z'}));
 const latest=vm.runInContext('newsletterHighlights()',context);assert.match(latest,/Issue 3/);assert.doesNotMatch(latest,/Issue 4/);assert.equal((latest.match(/data-news=/g)||[]).length,3);
 assert.match(vm.runInContext('newsCards()',context),/Issue 4/);
